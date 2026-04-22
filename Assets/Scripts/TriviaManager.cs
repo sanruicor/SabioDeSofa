@@ -111,36 +111,37 @@ public class TriviaManager : MonoBehaviour
     // ── Corrutina: llamada a la API ──────────────────────────────────
     IEnumerator FetchQuestions(string url)
     {
-        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        UnityWebRequest request = UnityWebRequest.Get(url);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            yield return request.SendWebRequest();
+            Debug.LogError("Error en la petición: " + request.error);
+            yield break;
+        }
 
-            if (request.result != UnityWebRequest.Result.Success)
+        // Deserializar JSON
+        apiResponse = JsonUtility.FromJson<ApiResponse>(request.downloadHandler.text);
+
+        Debug.Log($"Número de preguntas solicitadas: {apiResponse.results.Count}");
+        if (apiResponse.results.Count > 0)
+        {
+            foreach (TriviaQuestion first in apiResponse.results)
             {
-                Debug.LogError("Error en la petición: " + request.error);
-                yield break;
-            }
-
-            // Deserializar JSON
-            apiResponse = JsonUtility.FromJson<ApiResponse>(request.downloadHandler.text);
-
-            // ── Log requerido por el enunciado ───────────────────────
-            Debug.Log($"Número de preguntas solicitadas: {apiResponse.results.Count}");
-            if (apiResponse.results.Count > 0)
-            {
-                TriviaQuestion first = apiResponse.results[0];
                 Debug.Log($"[Pregunta 1] Categoría: {first.category}");
                 Debug.Log($"[Pregunta 1] Dificultad: {first.difficulty}");
                 Debug.Log($"[Pregunta 1] Pregunta: {first.question}");
                 Debug.Log($"[Pregunta 1] Respuesta correcta: {first.correct_answer}");
             }
-
-            questions = apiResponse.results;
-            currentIndex = 0;
-            score = 0;
-            ShowPanel(questionPanel);
-            LoadQuestion();
         }
+
+        questions = apiResponse.results;
+        currentIndex = 0;
+        score = 0;
+        ShowPanel(questionPanel);
+        LoadQuestion();
+
     }
 
     // ── Cargar pregunta actual ───────────────────────────────────────
