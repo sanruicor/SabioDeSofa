@@ -19,10 +19,6 @@ public class TriviaManager : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             var N = JSON.Parse(request.downloadHandler.text);
-            Debug.Log(N.ToString());
-            // Now you can access your data dynamically. For example:
-            string value = N["results"][0]["type"].Value; // Now you can access JSON like in javascript with keys and 
-            Debug.Log(value);
 
             for (int i = 0; i < 11; i++)
             {
