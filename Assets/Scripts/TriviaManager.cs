@@ -152,7 +152,7 @@ public class TriviaManager : MonoBehaviour
         TriviaQuestion q = questions[currentIndex];
 
         questionNumberText.text = $"Pregunta {currentIndex + 1} / {questions.Count}";
-        categoryText.text = q.category;
+        categoryText.text = DecodeHtml(q.category);
         difficultyText.text = $"Dificultad: {TranslateDifficulty(q.difficulty)}";
         questionText.text = DecodeHtml(q.question);
 
